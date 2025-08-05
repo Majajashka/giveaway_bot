@@ -11,12 +11,12 @@ COPY requirements /app/requirements
 RUN pip install -r requirements/pre.txt
 
 
-RUN mkdir -p /app/src/template
-COPY ./src/template/__init__.py /app/src/template/__init__.py
+RUN mkdir -p /app/src/giveaway_bot
+COPY ./src/giveaway_bot/__init__.py /app/src/giveaway_bot/__init__.py
 
 RUN python3 -m uv pip install -e .
 
 COPY ./src /app/src
 COPY configs/config.toml /app/config.toml
 
-CMD ["python", "-m", "template.entrypoint.bot"]
+CMD ["python", "-m", "giveaway_bot.entrypoint.bot"]

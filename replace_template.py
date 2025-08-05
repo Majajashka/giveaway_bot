@@ -114,6 +114,6 @@ def main(root_dir, old_text, new_text):
 if __name__ == "__main__":
     setup_logger()
     root_directory = "./"
-    old_str = "music"
-    new_str = "template"
+    old_str = "template"
+    new_str = "giveaway_bot"
     main(root_directory, old_str, new_str)

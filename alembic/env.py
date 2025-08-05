@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from template.infrastructure.database.models.base import Base
+from giveaway_bot.infrastructure.database.models.base import Base
 from dotenv import load_dotenv
 
 # this is the Alembic Config object, which provides

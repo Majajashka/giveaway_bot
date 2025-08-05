@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 package-dir = { "" = "src" }
 
 [project]
-name = "template"
+name = "giveaway_bot"
 version = "0.0.1"
 authors = [
     { name = "Majajashka", email = "majajashka@hotmail.com" },
@@ -65,7 +65,7 @@ line-length = 120
 output-format = "concise"
 exclude = [
     "alembic/",
-    "replace_template.py"
+    "replace_giveaway_bot.py"
 ]
 
 [tool.ruff.lint]
