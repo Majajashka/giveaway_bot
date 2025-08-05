@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[project]
+name = "template"
+version = "0.0.1"
+authors = [
+    { name = "Majajashka", email = "majajashka@hotmail.com" },
+]
+requires-python = "==3.12.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "aiogram==3.18.0",
+    "adaptix==3.0.0b9",
+    "dishka==1.4.2",
+    "psycopg==3.2.9",
+    "psycopg-binary==3.2.9",
+    "fluentogram==1.1.7",
+    "redis==5.2.1",
+    "structlog>=25.2.0",
+    "aiogram-dialog>=2.3.1",
+    "sqlalchemy",
+    'fluent.runtime==0.4.0',
+]
+
+[project.optional-dependencies]
+
+test = [
+  "pytest",
+  "pytest-cov"
+]
+
+dev = [
+  "ruff",
+  "mypy",
+]
+
+migrations = [
+    "alembic-postgresql-enum==1.3.0",
+    "alembic==1.15.1",
+    "python-dotenv"
+]
+
+[tool.mypy]
+show_error_codes = true
+warn_unused_configs = true
+no_implicit_optional = true
+
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unreachable = true
+disallow_subclassing_any = true
+
+local_partial_types = true
+
+[tool.ruff]
+line-length = 120
+output-format = "concise"
+exclude = [
+    "alembic/",
+    "replace_template.py"
+]
+
+[tool.ruff.lint]
+select = ['ALL']
+ignore = [
+    "D",
+    "ANN204",
+    "SIM108",
+    "RET504",
+    "ANN201",
+    "COM812",
+    'RET505',
+    "ANN401",
+    "TC002"
+]
+
+

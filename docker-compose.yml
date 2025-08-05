@@ -1,0 +1,49 @@
+services:
+  bot:
+    build: .
+    container_name: template_tg_bot
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+    restart: unless-stopped
+    networks:
+      - bot-network
+
+  db:
+    image: postgres:17
+    container_name: template_postgres_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "5110:5432"
+    restart: unless-stopped
+    networks:
+      - bot-network
+
+  redis:
+    image: redis:latest
+    container_name: template_redis_cache
+    ports:
+      - "6379"
+    restart: unless-stopped
+    volumes:
+      - ./redisdata:/data
+    networks:
+      - bot-network
+
+
+volumes:
+  pgdata:
+
+
+networks:
+  bot-network:
+    driver: bridge

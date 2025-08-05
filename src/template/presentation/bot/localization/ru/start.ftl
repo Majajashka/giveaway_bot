@@ -1,0 +1,1 @@
+start = Привет, {$first_name}!
