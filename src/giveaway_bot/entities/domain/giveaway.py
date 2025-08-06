@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from datetime import datetime
+from uuid import UUID
 
 from giveaway_bot.entities.domain.media import Media
 
 
 @dataclass
 class Giveaway:
-    id: int
+    id: UUID
     title: str
     media: Media
     ends_at: datetime
