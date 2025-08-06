@@ -12,8 +12,7 @@ class Giveaway:
     media: Media
     ends_at: datetime
     created_at: datetime
-
-    description: str | None = None
+    description: str
 
     def is_active(self, now: datetime) -> bool:
         return now < self.ends_at
