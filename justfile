@@ -13,6 +13,7 @@ set windows-powershell := true
     docker compose up -d
 
 @up:
+    mkdir -p ./media
     docker compose up -d
 
 @build:

@@ -10,6 +10,7 @@ COPY requirements /app/requirements
 
 RUN pip install -r requirements/pre.txt
 
+RUN mkdir -p /app/media
 
 RUN mkdir -p /app/src/giveaway_bot
 COPY ./src/giveaway_bot/__init__.py /app/src/giveaway_bot/__init__.py
