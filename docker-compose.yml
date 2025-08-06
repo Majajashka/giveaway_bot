@@ -1,7 +1,7 @@
 services:
   bot:
     build: .
-    container_name: template_tg_bot
+    container_name: giveaway_tg_bot
     env_file:
       - .env
     depends_on:
@@ -17,20 +17,20 @@ services:
 
   db:
     image: postgres:17
-    container_name: template_postgres_db
+    container_name: giveaway_postgres_db
     volumes:
       - pgdata:/var/lib/postgresql/data
     env_file:
       - .env
     ports:
-      - "5110:5432"
+      - "5000:5432"
     restart: unless-stopped
     networks:
       - bot-network
 
   redis:
     image: redis:latest
-    container_name: template_redis_cache
+    container_name: giveaway_redis_cache
     ports:
       - "6379"
     restart: unless-stopped

@@ -4,7 +4,6 @@ from aiogram.types import User as TGUser
 from giveaway_bot.application.interfaces.dao.user import UserRepository
 from giveaway_bot.application.interfaces.provider import IdentityProvider
 from giveaway_bot.entities.domain.user import User
-from giveaway_bot.entities.enum.role import Role
 
 
 class TGUserIdentityProvider(IdentityProvider):

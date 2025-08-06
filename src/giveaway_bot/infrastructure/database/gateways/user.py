@@ -1,5 +1,5 @@
 from adaptix._internal.conversion.facade.func import get_converter
-from adaptix._internal.conversion.facade.provider import link, coercer
+from adaptix._internal.conversion.facade.provider import coercer
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession

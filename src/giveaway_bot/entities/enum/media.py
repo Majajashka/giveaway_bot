@@ -1,5 +1,5 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class MediaType(Enum):
+class MediaType(StrEnum):
     PHOTO = "photo"

@@ -1,4 +1,4 @@
-from dishka import provide, Provider, Scope
+from dishka import Provider, Scope, provide
 
 from giveaway_bot.application.interfaces.clock import Clock
 from giveaway_bot.infrastructure.clock import ClockImpl

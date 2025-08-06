@@ -65,7 +65,7 @@ line-length = 120
 output-format = "concise"
 exclude = [
     "alembic/",
-    "replace_giveaway_bot.py"
+    "replace_template.py"
 ]
 
 [tool.ruff.lint]
