@@ -2,12 +2,10 @@ from aiogram import Router
 
 from .base import router as base_router
 from .giveaway import router as giveaway_router
-from .admin import get_router as get_admin_router
 
 
 def get_router() -> Router:
     router = Router()
     router.include_router(base_router)
     router.include_router(giveaway_router)
-    router.include_router(get_admin_router())
     return router

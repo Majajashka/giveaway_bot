@@ -28,7 +28,7 @@ class DpProvider(Provider):
 
     @provide
     async def get_storage(self, config: TelegramBotConfig, redis: Redis) -> BaseStorage:
-        if config.storage.storage_type == TelegramBotStorageType:
+        if config.storage.storage_type == TelegramBotStorageType.REDIS:
             return RedisStorage(
                 redis=redis,
                 key_builder=DefaultKeyBuilder(with_bot_id=True, with_destiny=True),

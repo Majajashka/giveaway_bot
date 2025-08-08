@@ -3,7 +3,6 @@ from dishka import Provider, Scope, provide
 from giveaway_bot.application.interfaces.dao.giveaway import GiveawayRepository
 from giveaway_bot.application.interfaces.dao.media import MediaRepository
 from giveaway_bot.application.interfaces.dao.user import UserRepository
-from giveaway_bot.entities.domain.giveaway import Giveaway
 from giveaway_bot.infrastructure.database.gateways.giveaway import GiveawayRepoImpl
 from giveaway_bot.infrastructure.database.gateways.media import MediaRepositoryImpl
 from giveaway_bot.infrastructure.database.gateways.user import UserRepositoryImpl

@@ -15,8 +15,8 @@ class CreateGiveawayInteractor:
         self.media_repo = media_repo
         self.uow = uow
 
-    async def execute(self, title: str, description: str, media: BytesIO, ends_at: datetime) -> Giveaway:
-        media = await self.media_repo.create_media(data=media, media_type=MediaType.PHOTO)
+    async def execute(self, title: str, description: str, media_data: BytesIO, ends_at: datetime) -> Giveaway:
+        media = await self.media_repo.create_media(data=media_data, media_type=MediaType.PHOTO)
         giveaway_data = CreateGiveawayDTO(
             title=title,
             description=description,

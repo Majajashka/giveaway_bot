@@ -28,6 +28,12 @@ class TelegramBotStorageConfig:
 class TelegramBotOwnerConfig:
     tg_user_id: int
     tg_chat_id: int
+    timezone: str
+
+
+@dataclass(slots=True, frozen=True)
+class TelegramBotRequiredChannels:
+    channels: list[int]
 
 
 @dataclass(slots=True, frozen=True)
@@ -36,6 +42,7 @@ class TelegramBotConfig:
     skip_updates: bool
     owner: TelegramBotOwnerConfig
     storage: TelegramBotStorageConfig
+    required_channels: TelegramBotRequiredChannels
 
 
 @dataclass(slots=True, frozen=True)
@@ -85,6 +92,7 @@ class Config:
     localization: LocalizationConfig
     postgresql: PostgresqlConfig
     redis: RedisConfig
+
 
 
 def _load_postgresql_secrets() -> dict[str, str]:

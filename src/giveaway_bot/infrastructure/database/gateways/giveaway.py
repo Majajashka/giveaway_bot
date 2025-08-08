@@ -19,7 +19,7 @@ class GiveawayRepoImpl(GiveawayRepository):
         giveaway = insert(GiveawayORM).values(
             title=giveaway_data.title,
             description=giveaway_data.description,
-            media=giveaway_data.media,
+            media_id=giveaway_data.media.id,
             ends_at=giveaway_data.ends_at
         ).returning(GiveawayORM)
         data = await self.session.execute(giveaway)

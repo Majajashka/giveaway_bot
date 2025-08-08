@@ -1,5 +1,4 @@
 import uuid
-
 from io import BytesIO
 
 from sqlalchemy import select

@@ -4,8 +4,9 @@ from aiogram.enums import ParseMode
 from aiogram.types import User
 from dishka import Provider, Scope, from_context, provide
 
-from giveaway_bot.config import LocalizationConfig, TelegramBotConfig
+from giveaway_bot.config import LocalizationConfig, TelegramBotConfig, TelegramBotOwnerConfig
 from giveaway_bot.infrastructure.localization.translator import LocalizationStorage, build_localization_storage
+from giveaway_bot.presentation.bot.utils.clock import LocalizedClock
 
 
 class BotProvider(Provider):
@@ -22,6 +23,11 @@ class BotProvider(Provider):
                 link_preview_is_disabled=True,
             ),
         )
+
+    @provide
+    def get_localized_clock(self, config: TelegramBotOwnerConfig) -> LocalizedClock:
+        return LocalizedClock(timezone=config.timezone)
+
 
 class LocalizationProvider(Provider):
     scope = Scope.APP

@@ -6,7 +6,7 @@ from giveaway_bot.config import (
     LocalizationConfig,
     PostgresqlConfig,
     RedisConfig,
-    TelegramBotConfig,
+    TelegramBotConfig, TelegramBotOwnerConfig, TelegramBotRequiredChannels,
 )
 
 
@@ -17,6 +17,14 @@ class ConfigProvider(Provider):
     @provide
     def telegram_bot(self, config: Config) -> TelegramBotConfig:
         return config.telegram_bot
+
+    @provide
+    def owner_config(self, config: Config) -> TelegramBotOwnerConfig:
+        return config.telegram_bot.owner
+
+    @provide
+    def telegram_required_channels(self, config: TelegramBotConfig) -> TelegramBotRequiredChannels:
+        return config.required_channels
 
     @provide
     def postgresql(self, config: Config) -> PostgresqlConfig:

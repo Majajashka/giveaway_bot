@@ -11,3 +11,7 @@ class Media:
     path: str
     type: MediaType
     created_at: datetime
+
+    @property
+    def filename(self) -> str:
+        return f"{self.id}.{self.type.extension}"

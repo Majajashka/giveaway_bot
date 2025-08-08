@@ -10,7 +10,7 @@ set windows-powershell := true
     uv pip install -e .[dev] . .[test] .[migrations]
 
 @dev:
-    docker compose up -d
+    docker compose up -d --build
 
 @up:
     mkdir -p ./media

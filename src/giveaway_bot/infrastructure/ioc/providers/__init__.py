@@ -7,6 +7,7 @@ from giveaway_bot.infrastructure.ioc.providers.dispatcher import DpProvider
 from giveaway_bot.infrastructure.ioc.providers.gateway import GatewayProvider
 from giveaway_bot.infrastructure.ioc.providers.idp import IdPProvider
 from giveaway_bot.infrastructure.ioc.providers.interactor import InteractorProvider
+from giveaway_bot.infrastructure.ioc.providers.service import ServiceProvider
 from giveaway_bot.infrastructure.ioc.providers.utils import UtilsProvider
 
 
@@ -18,7 +19,8 @@ def get_providers() -> list[Provider]:
         LocalizationProvider(),
         GatewayProvider(),
         InteractorProvider(),
-        UtilsProvider()
+        UtilsProvider(),
+        ServiceProvider()
     ]
 
 
