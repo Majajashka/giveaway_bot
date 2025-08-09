@@ -19,11 +19,17 @@ class SubscriptionCheckerImpl(SubscriptionChecker):
 
     async def is_subscribed(self, tg_id: int, channel_id: int) -> bool:
         try:
-            member = await self._bot.get_chat_member(channel_id, tg_id)
+            member = await self._bot.get_chat_member(self._format_channel_id(channel_id), tg_id)
         except (TelegramBadRequest, TelegramForbiddenError) as e:
             logger.warning(e)
             raise BotNotInChannelError(channel_id=channel_id) from e
         return member.status not in (ChatMemberStatus.LEFT, ChatMemberStatus.KICKED)
+
+    @staticmethod
+    def _format_channel_id(channel_id: int) -> int:
+        if not str(channel_id).startswith("-100"):
+            return int(f'-100{channel_id}')
+        return channel_id
 
 
 class ChannelLinkServiceImpl(ChannelLinkService):

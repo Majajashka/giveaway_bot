@@ -11,7 +11,7 @@ class UserORM(Base, TimestampMixin):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
-    tg_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    tg_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, unique=True)
     username: Mapped[str | None] = mapped_column(nullable=True)
     language: Mapped[str] = mapped_column(default=Language.RU.value)
     role: Mapped[str] = mapped_column(default=Role.USER.value, nullable=False)

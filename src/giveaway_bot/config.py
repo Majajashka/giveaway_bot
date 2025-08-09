@@ -87,12 +87,17 @@ class LocalizationConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class IntegrationConfig:
+    service_url: str
+
+
+@dataclass(frozen=True, slots=True)
 class Config:
     telegram_bot: TelegramBotConfig
     localization: LocalizationConfig
     postgresql: PostgresqlConfig
     redis: RedisConfig
-
+    integration: IntegrationConfig
 
 
 def _load_postgresql_secrets() -> dict[str, str]:

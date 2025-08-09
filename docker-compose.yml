@@ -42,6 +42,24 @@ services:
       - bot-network
 
 
+  api:
+    build: .
+    command: [ "python", "-m", "giveaway_bot.entrypoint.api" ]
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+    ports:
+      - "8900:80"
+    restart: unless-stopped
+    networks:
+      - bot-network
+
 volumes:
   pgdata:
 

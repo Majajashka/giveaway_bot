@@ -10,7 +10,7 @@ class LocalizedClock:
 
     def now(self) -> datetime:
         local_tz = pytz.timezone(self._timezone)
-        return datetime.now(local_tz)
+        return datetime.now(local_tz).replace(tzinfo=None)
 
     def convert_utc_to_local(self, utc_dt: datetime) -> datetime:
         local_tz = pytz.timezone(self._timezone)

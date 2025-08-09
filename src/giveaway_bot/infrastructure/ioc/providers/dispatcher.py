@@ -31,7 +31,7 @@ class DpProvider(Provider):
         if config.storage.storage_type == TelegramBotStorageType.REDIS:
             return RedisStorage(
                 redis=redis,
-                key_builder=DefaultKeyBuilder(with_bot_id=True, with_destiny=True),
+                key_builder=DefaultKeyBuilder(),
             )
         else:
             return MemoryStorage()

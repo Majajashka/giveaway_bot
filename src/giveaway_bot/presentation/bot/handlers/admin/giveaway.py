@@ -10,7 +10,7 @@ from dishka import FromDishka
 
 from giveaway_bot.application.interactors.giveaway.create_giveaway import CreateGiveawayInteractor
 from giveaway_bot.infrastructure.localization.translator import Localization
-from giveaway_bot.presentation.bot.keyboard.admin import get_admin_menu_kb
+from giveaway_bot.presentation.bot.keyboard.admin.base import get_admin_menu_kb
 from giveaway_bot.presentation.bot.utils.byte_utils import to_bytesio
 from giveaway_bot.presentation.bot.utils.clock import LocalizedClock
 
@@ -33,7 +33,8 @@ async def start_giveaway_creation(callback: CallbackQuery, state: FSMContext):
 @router.message(GiveawayCreateFSM.TITLE_INPUT)
 async def process_title(message: Message, i18n: Localization, state: FSMContext):
     await state.update_data(title=message.text)
-    await message.answer(text="Введите дату окончания в формате <b>ДД-ММ-ГГГГ ЧЧ:ММ</b> (например: <code>20-08-2025 18:30</code>)")
+    await message.answer(
+        text="Введите дату окончания в формате <b>ДД-ММ-ГГГГ ЧЧ:ММ</b> (например: <code>20-08-2025 18:30</code>)")
     await state.set_state(GiveawayCreateFSM.DURATION_INPUT)
 
 
@@ -64,7 +65,8 @@ async def process_duration(message: Message, i18n: Localization, state: FSMConte
 
 
 @router.message(F.photo, GiveawayCreateFSM.DESCRIPTION_INPUT)
-async def process_description(message: Message, state: FSMContext, bot: Bot, interactor: FromDishka[CreateGiveawayInteractor], clock: FromDishka[LocalizedClock]):
+async def process_description(message: Message, state: FSMContext, bot: Bot,
+                              interactor: FromDishka[CreateGiveawayInteractor], clock: FromDishka[LocalizedClock]):
     data = await state.get_data()
     title: str = data.get("title")
     end_date: datetime = clock.parse_utc_time(data.get("end_date"))
@@ -83,9 +85,9 @@ async def process_description(message: Message, state: FSMContext, bot: Bot, int
     bot_username = (await bot.get_me()).username
     await state.clear()
     await message.answer(
-        text=f"Розыгрыш создан: {giveaway.id}\n"
-             f"Название: {giveaway.title}\n"
-             f"Дата окончания: {clock.convert_utc_to_local(giveaway.ends_at)}\n"
-             f"Ссылка: https://t.me/{bot_username}?start={giveaway.id}\n",
+        text=(
+            f"Розыгрыш успешно создан!\n"
+            f"Ссылка: https://t.me/{bot_username}?start={giveaway.id}\n\n"
+        ),
         reply_markup=get_admin_menu_kb()
     )

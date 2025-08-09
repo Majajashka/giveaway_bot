@@ -60,4 +60,5 @@ def build_links_keyboard(
     )
 
     keyboard.row(*buttons, width=buttons_per_row)
+    keyboard.row(check_subscription)
     return keyboard.as_markup()

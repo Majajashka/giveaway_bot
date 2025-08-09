@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Protocol
 from uuid import UUID
 
@@ -13,6 +14,18 @@ class GiveawayRepository(Protocol):
 
     async def get_by_id(self, giveaway_id: UUID) -> Giveaway | None:
         """Get a giveaway by its ID."""
+        raise NotImplementedError
+
+    async def get_all(self, active_only: bool = False) -> list[Giveaway]:
+        """Get all giveaways, optionally filtering by active status."""
+        raise NotImplementedError
+
+    async def edit_giveaway_date(
+        self,
+        giveaway_id: UUID,
+        new_date: datetime
+    ) -> None:
+        """Edit the date of an existing giveaway."""
         raise NotImplementedError
 
 

@@ -6,7 +6,7 @@ from giveaway_bot.config import (
     LocalizationConfig,
     PostgresqlConfig,
     RedisConfig,
-    TelegramBotConfig, TelegramBotOwnerConfig, TelegramBotRequiredChannels,
+    TelegramBotConfig, TelegramBotOwnerConfig, TelegramBotRequiredChannels, IntegrationConfig,
 )
 
 
@@ -37,3 +37,7 @@ class ConfigProvider(Provider):
     @provide
     def redis(self, config: Config) -> RedisConfig:
         return config.redis
+
+    @provide
+    def integration_config(self, config: Config) -> IntegrationConfig:
+        return config.integration

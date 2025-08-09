@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Protocol, AsyncGenerator
 
 from giveaway_bot.application.dtos.user import UserCreateDTO
 from giveaway_bot.entities.domain.user import User
@@ -13,4 +13,7 @@ class UserRepository(Protocol):
         raise NotImplementedError
 
     async def create_user(self, data: UserCreateDTO) -> User:
+        raise NotImplementedError
+
+    async def get_all(self, batch_size: int) -> AsyncGenerator[list[User], None]:
         raise NotImplementedError
