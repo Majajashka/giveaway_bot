@@ -16,7 +16,7 @@ from dishka import FromDishka
 from giveaway_bot.application.interfaces.dao.user import UserRepository
 from giveaway_bot.presentation.bot.keyboard.admin.base import back_to_admin_menu
 from giveaway_bot.presentation.bot.keyboard.admin.broadcast import URLButton, get_broadcast_confirmation_menu, \
-    BroadcastAddButtonCallback
+    BroadcastAddButtonCallback, BroadcastCallbackData, get_broadcast_menu
 from giveaway_bot.presentation.bot.utils.byte_utils import bytesio_to_base64, base64_to_bytes
 from giveaway_bot.presentation.bot.utils.mailer import TGNotificator, MailingTaskDTO, MailingResult
 
@@ -53,10 +53,18 @@ url_button_retort = Retort()
 
 
 @router.callback_query(F.data == "broadcast")
-async def broadcast_create(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text("Введите текст", reply_markup=back_to_admin_menu())
+async def broadcast_variants(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text("Выберите действие", reply_markup=get_broadcast_menu())
     await state.set_state(BroadcastState.CREATE)
     await state.update_data({"last_message_id": callback.message.message_id})
+
+
+@router.callback_query(BroadcastCallbackData.filter())
+async def broadcast_create(callback: CallbackQuery, callback_data: BroadcastCallbackData, state: FSMContext):
+    await callback.message.delete_reply_markup()
+    await callback.message.edit_text("Введите текст")
+    await state.set_state(BroadcastState.CREATE)
+    await state.update_data({"last_message_id": callback.message.message_id, "are_subscribed": callback_data.are_subscribed})
 
 
 @router.message(BroadcastState.CREATE)
@@ -146,6 +154,7 @@ async def broadcast_create(
     data = await state.get_data()
     text = data.get("broadcast_text")
     photo = data.get("photo")
+    are_subscribed: bool | None = data.get("are_subscribed")
     buttons_data = data.get("buttons", [])
     buttons = retort.load(buttons_data, list[URLButton])
     keyboard = build_broadcast_keyboard(buttons)
@@ -168,7 +177,7 @@ async def broadcast_create(
         mailing_result = MailingResult()
 
         try:
-            async for users_batch in user_repository.get_all(batch_size=1000):
+            async for users_batch in user_repository.get_all(batch_size=1000, are_subscribed=are_subscribed):
                 messages = []
                 for user in users_batch:
                     messages.append(

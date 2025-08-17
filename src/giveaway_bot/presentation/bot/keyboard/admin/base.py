@@ -19,8 +19,29 @@ class ChangeGiveawayDescriptionCallbackData(CallbackData, prefix="change_giveawa
     giveaway_id: UUID
 
 
+class ChangeGiveawaySubscriptionMenuCallbackData(CallbackData, prefix="change_give_sub_menu"):
+    giveaway_id: UUID
+
+
+class ChangeGiveawayIntegrationMenuCallbackData(CallbackData, prefix="change_give_intg_menu"):
+    giveaway_id: UUID
+
+
+class ChangeGiveawaySuccessMenuCallbackData(CallbackData, prefix="change_give_part_menu"):
+    giveaway_id: UUID
+
+
 class EndGiveawayCallbackData(CallbackData, prefix="end_giveaway"):
     giveaway_id: UUID
+
+
+class HideIntegrationCallbackData(CallbackData, prefix="hide_integration"):
+    giveaway_id: UUID
+
+
+class ChangeIntegrationURLCallbackData(CallbackData, prefix="edit_link"):
+    giveaway_id: UUID
+
 
 
 def get_admin_menu_kb() -> InlineKeyboardMarkup:
@@ -66,26 +87,44 @@ def get_giveaway_list(giveaways: list[Giveaway]) -> InlineKeyboardMarkup:
     return kb.as_markup()
 
 
-def get_giveaway_info_kb(giveaway_id: UUID) -> InlineKeyboardMarkup:
+def get_giveaway_info_kb(giveaway_id: UUID, hide_integration: bool) -> InlineKeyboardMarkup:
     kb = [
         [
             InlineKeyboardButton(
-                text="Продлить розыгрыш",
-                callback_data=ExtendGiveawayCallbackData(giveaway_id=giveaway_id).pack()
+                text="Изменить описание",
+                callback_data=ChangeGiveawayDescriptionCallbackData(giveaway_id=giveaway_id).pack()
             )
         ],
-        # [
-        #     InlineKeyboardButton(
-        #         text="Изменить описание",
-        #         callback_data=ChangeGiveawayDescriptionCallbackData(giveaway_id=giveaway_id).pack()
-        #     )
-        # ],
-        # [
-        #     InlineKeyboardButton(
-        #         text="Завершить розыгрыш",
-        #         callback_data=EndGiveawayCallbackData(giveaway_id=giveaway_id).pack()
-        #     )
-        # ],
+        [
+            InlineKeyboardButton(
+                text="Изменить меню подписки",
+                callback_data=ChangeGiveawaySubscriptionMenuCallbackData(giveaway_id=giveaway_id).pack()
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Изменить меню интеграции",
+                callback_data=ChangeGiveawayIntegrationMenuCallbackData(giveaway_id=giveaway_id).pack()
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Изменить меню участия",
+                callback_data=ChangeGiveawaySuccessMenuCallbackData(giveaway_id=giveaway_id).pack()
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text=f"Скрыть модерацию {'✅' if hide_integration else '❌'}",
+                callback_data=HideIntegrationCallbackData(giveaway_id=giveaway_id).pack()
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Изменить ссылку",
+                callback_data=ChangeIntegrationURLCallbackData(giveaway_id=giveaway_id).pack()
+            )
+        ],
         [
             InlineKeyboardButton(
                 text="Назад",
@@ -106,6 +145,7 @@ def get_back_to_giveaway_info_kb(giveaway_id: UUID) -> InlineKeyboardMarkup:
         ]
     ]
     return InlineKeyboardMarkup(inline_keyboard=kb)
+
 
 def back_to_admin_menu() -> InlineKeyboardMarkup:
     kb = [

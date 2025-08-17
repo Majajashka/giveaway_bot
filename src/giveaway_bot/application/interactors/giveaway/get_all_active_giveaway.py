@@ -12,4 +12,4 @@ class GetAllActiveGiveawayInteractor:
 
         :return: List of active giveaways.
         """
-        return await self.giveaway_repo.get_all(active_only=True)
+        return await self.giveaway_repo.get_all(active_only=False)

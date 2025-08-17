@@ -14,6 +14,8 @@ class User:
     language: Language
     is_banned: bool
     is_active: bool
+    is_subscribed: bool
+    was_subscribed: bool
     created_at: datetime
 
     def active(self):

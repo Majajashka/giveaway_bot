@@ -6,13 +6,24 @@ from giveaway_bot.entities.domain.media import Media
 
 
 @dataclass
+class GiveawayStep:
+    text: str
+    media: list[Media] | None = None
+
+
+@dataclass
 class Giveaway:
     id: UUID
     title: str
-    media: Media
     ends_at: datetime
+    hide_integration: bool
+    integration_url: str
     created_at: datetime
-    description: str
+
+    description_step: GiveawayStep
+    subscription_step: GiveawayStep | None = None
+    integration_step: GiveawayStep | None = None
+    success_step: GiveawayStep | None = None
 
     def is_active(self, now: datetime) -> bool:
         return now < self.ends_at

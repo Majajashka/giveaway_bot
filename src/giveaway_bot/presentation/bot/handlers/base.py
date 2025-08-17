@@ -3,14 +3,16 @@ from uuid import UUID
 
 from aiogram import Router
 from aiogram.filters import CommandObject, CommandStart
-from aiogram.types import BufferedInputFile, Message
+from aiogram.types import BufferedInputFile, Message, InputMediaPhoto
 from dishka import FromDishka
 
 from giveaway_bot.application.interactors.giveaway.get_active_giveaway import GetActiveGiveawayInteractor
+from giveaway_bot.application.interactors.giveaway.get_giveaway_steps import GetGiveawayStepsInteractor
 from giveaway_bot.common.utils import is_uuid
 from giveaway_bot.infrastructure.localization.translator import Localization
 from giveaway_bot.infrastructure.media_storage import MediaStorage
 from giveaway_bot.presentation.bot.keyboard.giveaway import get_giveaway_kb
+from giveaway_bot.presentation.bot.utils.media import answer_by_media
 
 router = Router(name=__name__)
 logger = logging.getLogger(__name__)
@@ -21,7 +23,7 @@ async def hello_handler(
         message: Message,
         command: CommandObject,
         i18n: Localization,
-        interactor: FromDishka[GetActiveGiveawayInteractor],
+        interactor: FromDishka[GetGiveawayStepsInteractor],
         file_repo: FromDishka[MediaStorage]
 ):
     if not is_uuid(command.args):
@@ -32,8 +34,9 @@ async def hello_handler(
         return
 
     giveaway_id = UUID(command.args)
-    giveaway = await interactor.execute(giveaway_id)
-    if not giveaway:
+    giveaway_steps = await interactor.execute(giveaway_id)
+    step = giveaway_steps.description_step
+    if not step:
         logger.info(
             f"User {message.from_user.id} tried to start the bot with a non-existing giveaway ID: {giveaway_id}"
         )
@@ -41,18 +44,13 @@ async def hello_handler(
         return
 
     kb = get_giveaway_kb(giveaway_id=giveaway_id)
-    text = giveaway.description
 
-    if giveaway.media:
-        media_data = await file_repo.get_media(str(giveaway.media.filename))
-        media_data.seek(0)
-        await message.answer_photo(
-            photo=BufferedInputFile(media_data.read(), filename=giveaway.media.filename),
-            caption=text,
-            reply_markup=kb
-        )
-    else:
-        await message.answer(text=text, reply_markup=kb)
+    await answer_by_media(
+        event=message,
+        step=step,
+        file_repo=file_repo,
+        kb=kb
+    )
     logger.info(
         f"User {message.from_user.id} started the bot with giveaway ID: {giveaway_id}"
     )

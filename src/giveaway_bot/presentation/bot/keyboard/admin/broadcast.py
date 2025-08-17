@@ -17,6 +17,10 @@ class BroadcastAddButtonCallback(CallbackData, prefix="broadcast_add_button"):
     column: int
 
 
+class BroadcastCallbackData(CallbackData, prefix="broadcast"):
+    are_subscribed: bool | None
+
+
 def build_add_button_kb(buttons: list[list[URLButton]] | None) -> list[list[InlineKeyboardButton]]:
     if not buttons:
         kb: list[list[InlineKeyboardButton]] = [
@@ -86,6 +90,34 @@ def get_broadcast_confirmation_menu(
             ),
             InlineKeyboardButton(
                 text="Отменить ❌",
+                callback_data="admin:menu",
+            ),
+        ],
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=kb)
+
+
+def get_broadcast_menu() -> InlineKeyboardMarkup:
+    kb = [
+        [
+            InlineKeyboardButton(
+                text="Подписчикам",
+                callback_data=BroadcastCallbackData(are_subscribed=True).pack(),
+            ),
+            InlineKeyboardButton(
+                text="Неподписчикам",
+                callback_data=BroadcastCallbackData(are_subscribed=False).pack(),
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="Всем",
+                callback_data=BroadcastCallbackData(are_subscribed=None).pack(),
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="Назад",
                 callback_data="admin:menu",
             ),
         ],

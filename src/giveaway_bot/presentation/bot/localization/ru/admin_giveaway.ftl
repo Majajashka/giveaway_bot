@@ -10,9 +10,7 @@ giveaway-admin-info =
     🎁 <b>{ $title }</b>
     🆔 ID: <code>{ $id }</code>
     🗓 Создано: <b>{ DATETIME($created_at, dateStyle: "short", timeStyle: "short") }</b>
-    📅 Дата окончания: <b>{ DATETIME($ends_at, dateStyle: "short", timeStyle: "short") }</b>
-    ⌛ Осталось: <b>{ $time_left }</b>
 
-    📝 <b>Описание:</b>
-    <pre>{ $description }</pre>
+    Интеграционная ссылка: { $integrated_url }
+    Ссылка: { $url }
 

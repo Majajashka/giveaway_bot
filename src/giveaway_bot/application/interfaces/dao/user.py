@@ -15,5 +15,11 @@ class UserRepository(Protocol):
     async def create_user(self, data: UserCreateDTO) -> User:
         raise NotImplementedError
 
-    async def get_all(self, batch_size: int) -> AsyncGenerator[list[User], None]:
+    async def get_all(self, batch_size: int, are_subscribed: bool | None = None) -> AsyncGenerator[list[User], None]:
+        raise NotImplementedError
+
+    async def activate_subscription(self, tg_id: int) -> None:
+        raise NotImplementedError
+
+    async def deactivate_subscription(self, tg_id: int) -> None:
         raise NotImplementedError

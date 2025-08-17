@@ -38,10 +38,11 @@ class DpProvider(Provider):
 
     @provide
     async def get_event_isolation(self, config: TelegramBotConfig, redis: Redis) -> BaseEventIsolation:
-        if config.storage.storage_type == TelegramBotStorageType.REDIS:
-            return RedisEventIsolation(
-                redis=redis,
-                key_builder=DefaultKeyBuilder(with_bot_id=True, with_destiny=True),
-            )
-        else:
-            return SimpleEventIsolation()
+        # if config.storage.storage_type == TelegramBotStorageType.REDIS:
+        #     return RedisEventIsolation(
+        #         redis=redis,
+        #         key_builder=DefaultKeyBuilder(with_bot_id=True, with_destiny=True),
+        #     )
+        # else:
+        #     return SimpleEventIsolation()
+        return None

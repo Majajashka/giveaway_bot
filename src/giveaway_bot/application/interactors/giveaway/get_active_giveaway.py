@@ -13,7 +13,7 @@ class GetActiveGiveawayInteractor:
 
     async def execute(self, giveaway_id: UUID) -> Giveaway | None:
         giveaway = await self.giveaway_repo.get_by_id(giveaway_id)
-        if not giveaway or not giveaway.is_active(now=self.clock.now()):
-            return None
+        # if not giveaway or not giveaway.is_active(now=self.clock.now()):
+        #     return None
 
         return giveaway

@@ -17,3 +17,5 @@ class UserORM(Base, TimestampMixin):
     role: Mapped[str] = mapped_column(default=Role.USER.value, nullable=False)
     is_banned: Mapped[bool] = mapped_column(server_default=false())
     is_active: Mapped[bool] = mapped_column(server_default=true())
+    is_subscribed: Mapped[bool] = mapped_column(server_default=false())
+    was_subscribed: Mapped[bool] = mapped_column(server_default=false())

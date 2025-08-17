@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Awaitable, Callable
 from typing import Any
 
@@ -8,6 +9,7 @@ from giveaway_bot.application.dtos.user import UserCreateDTO
 from giveaway_bot.application.interactors.user.get_or_create_user_interactor import GetOrCreateUserInteractor
 from giveaway_bot.infrastructure.localization.translator import LocalizationStorage
 
+logger = logging.getLogger(__name__)
 
 class LocalizationMiddleware:
 
@@ -17,6 +19,9 @@ class LocalizationMiddleware:
             event: Message | CallbackQuery,
             data: dict[str, Any],
     ) -> Any:
+        if isinstance(event, Message):
+            # logger.info(f"{event.media_group_id}")
+            ...
         container: AsyncContainer = data["dishka_container"]
         localization_storage = await container.get(LocalizationStorage)
         user_interactor = await container.get(GetOrCreateUserInteractor)
