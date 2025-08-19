@@ -30,7 +30,7 @@ async def participate_giveaway_handler(
         giveaway_interactor: FromDishka[GetGiveawayStepsInteractor],
         channel_links_interactor: FromDishka[GetRequiredChannelLinksInteractor]
 ):
-    steps = await giveaway_interactor.execute(callback_data.giveaway_id)
+    steps = await giveaway_interactor.execute(callback_data.giveaway_id, user_id=callback_query.from_user.id)
     if not steps:
         await callback_query.message.answer(text=i18n("giveaway_not_found"))
         return
@@ -55,7 +55,7 @@ async def check_subscription_handler(
         file_repo: FromDishka[MediaStorage],
         giveaway_interactor: FromDishka[GetGiveawayStepsInteractor],
 ):
-    steps = await giveaway_interactor.execute(callback_data.giveaway_id)
+    steps = await giveaway_interactor.execute(callback_data.giveaway_id, user_id=callback_query.from_user.id)
     if not steps:
         await callback_query.message.answer(text=i18n("giveaway_not_found"))
         return

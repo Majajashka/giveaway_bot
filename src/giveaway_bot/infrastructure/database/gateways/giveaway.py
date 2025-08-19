@@ -94,7 +94,6 @@ class GiveawayRepoImpl(GiveawayRepository):
                 ])
             )
 
-        await self.session.commit()
 
     async def get_by_id(self, giveaway_id: UUID) -> Giveaway | None:
         """Get a giveaway by its ID."""

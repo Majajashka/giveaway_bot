@@ -31,8 +31,8 @@ async def answer_by_media(
         else:
             await message.answer_media_group(media=medias, reply_markup=kb)
     else:
-        await message.answer(text=text, reply_markup=kb)
-
+        msg = await message.answer(text=text, reply_markup=kb)
+        return msg.message_id
 
 async def edit_by_media(
         event: CallbackQuery | Message,

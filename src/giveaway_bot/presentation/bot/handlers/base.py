@@ -34,7 +34,7 @@ async def hello_handler(
         return
 
     giveaway_id = UUID(command.args)
-    giveaway_steps = await interactor.execute(giveaway_id)
+    giveaway_steps = await interactor.execute(giveaway_id, message.from_user.id)
     step = giveaway_steps.description_step
     if not step:
         logger.info(

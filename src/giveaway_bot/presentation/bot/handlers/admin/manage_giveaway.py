@@ -27,6 +27,7 @@ from giveaway_bot.presentation.bot.keyboard.admin.base import get_giveaway_list,
     ChangeIntegrationURLCallbackData
 from giveaway_bot.presentation.bot.utils.clock import LocalizedClock
 from giveaway_bot.presentation.bot.utils.media import answer_by_media
+from giveaway_bot.presentation.bot.utils.text import try_delete_message, format_giveaway_text
 
 logger = logging.getLogger(__name__)
 router = Router(name=__name__)
@@ -56,27 +57,6 @@ class EditGiveawayIntegrationUrlFSM(StatesGroup):
     INPUT = State()
 
 
-def format_giveaway_text(giveaway: Giveaway, clock: LocalizedClock, i18n: Localization, bot_username: str) -> str:
-    ended = giveaway.ends_at <= clock.now()
-
-    if not ended:
-        delta = giveaway.ends_at - clock.now()
-        days = delta.days
-        hours = delta.seconds // 3600
-        time_left = f"{days} дн. {hours} ч."
-    else:
-        time_left = ""
-
-    text = i18n(
-        "giveaway-admin-info",
-        title=giveaway.title,
-        id=str(giveaway.id.hex),
-        created_at=clock.convert_utc_to_local(giveaway.created_at),
-        time_left=time_left,
-        integrated_url=giveaway.integration_url,
-        url=f"https://t.me/{bot_username}?start={giveaway.id}"
-    )
-    return text
 
 
 @router.callback_query(F.data == "giveaway:list")
@@ -95,6 +75,7 @@ async def list_giveaways_handler(callback: CallbackQuery, i18n: Localization,
             text=i18n("giveaway-list"),
             reply_markup=get_giveaway_list(giveaways)
         )
+        return
 
     await callback.message.edit_text(
         text=i18n("giveaway-list"),
@@ -186,21 +167,21 @@ async def change_giveaway_description_handler(
         file_repo: FromDishka[MediaStorage],
 
 ):
-    steps = await interactor.execute(callback_data.giveaway_id)
+    steps = await interactor.execute(callback_data.giveaway_id, user_id=callback.from_user.id)
     await state.set_state(ChangeGiveawayDescriptionMenuFSM.INPUT)
-    await state.update_data(giveaway_id=str(callback_data.giveaway_id),
-                            message_id=callback.message.message_id)
+
     await answer_by_media(
         event=callback,
         step=steps.description_step,
         file_repo=file_repo,
     )
     await callback.answer()
-    await callback.message.answer(
+    clbk = await callback.message.answer(
         "Введите новое описание розыгрыша:",
         reply_markup=get_back_to_giveaway_info_kb(callback_data.giveaway_id)
     )
-
+    await state.update_data(giveaway_id=str(callback_data.giveaway_id),
+                            message_id=callback.message.message_id, clbk_msg_id=clbk.message_id)
 
 @router.message(ChangeGiveawayDescriptionMenuFSM.INPUT)
 async def change_giveaway_description_input_handler(
@@ -215,6 +196,7 @@ async def change_giveaway_description_input_handler(
     data = await state.get_data()
     giveaway_id = UUID(data["giveaway_id"])
     message_id = int(data["message_id"])
+    clbk_msg_id = int(data["clbk_msg_id"])
 
     await message.delete()
     text = message.html_text
@@ -225,6 +207,7 @@ async def change_giveaway_description_input_handler(
         text=text,
         media=[file] if file else None
     )
+    logger.info(step)
     giveaway = await interactor.execute(
         giveaway_id=giveaway_id,
         step_type="description",
@@ -232,6 +215,7 @@ async def change_giveaway_description_input_handler(
     )
     bot_username = (await bot.get_me()).username
     await bot.delete_message(chat_id=message.from_user.id, message_id=message_id)
+    await bot.delete_message(chat_id=message.from_user.id, message_id=clbk_msg_id)
     media_file = giveaway.description_step.media[0]
     bytes = await file_repo.get_media(media_file.filename)
     media = BufferedInputFile(bytes.read(), filename=media_file.filename)
@@ -252,7 +236,7 @@ async def change_giveaway_subscription_handler(
         interactor: FromDishka[GetGiveawayStepsInteractor],
         file_repo: FromDishka[MediaStorage],
 ):
-    steps = await interactor.execute(callback_data.giveaway_id)
+    steps = await interactor.execute(callback_data.giveaway_id, user_id=callback.from_user.id)
     await state.set_state(ChangeGiveawaySubscriptionMenuFSM.INPUT)
     await state.update_data(giveaway_id=str(callback_data.giveaway_id),
                             message_id=callback.message.message_id)
@@ -320,14 +304,14 @@ async def change_giveaway_integration_handler(
         interactor: FromDishka[GetGiveawayStepsInteractor],
         file_repo: FromDishka[MediaStorage],
 ):
-    steps = await interactor.execute(callback_data.giveaway_id)
+    steps = await interactor.execute(callback_data.giveaway_id, user_id=callback.from_user.id)
 
     await state.set_state(ChangeGiveawayIntegrationMenuFSM.INPUT)
     await state.update_data(giveaway_id=str(callback_data.giveaway_id),
                             message_id=callback.message.message_id)
     await answer_by_media(
         event=callback,
-        step=steps.subscription_step,
+        step=steps.integration_step,
         file_repo=file_repo,
     )
     await callback.answer()
@@ -335,6 +319,7 @@ async def change_giveaway_integration_handler(
         "Введите новый текст для меню интеграции:",
         reply_markup=get_back_to_giveaway_info_kb(callback_data.giveaway_id)
     )
+
 
 
 @router.message(ChangeGiveawayIntegrationMenuFSM.INPUT)
@@ -389,14 +374,14 @@ async def change_giveaway_success_handler(
         interactor: FromDishka[GetGiveawayStepsInteractor],
         file_repo: FromDishka[MediaStorage],
 ):
-    steps = await interactor.execute(callback_data.giveaway_id)
+    steps = await interactor.execute(callback_data.giveaway_id, user_id=callback.from_user.id)
 
     await state.set_state(ChangeGiveawaySuccessMenuMenuFSM.INPUT)
     await state.update_data(giveaway_id=str(callback_data.giveaway_id),
                             message_id=callback.message.message_id)
     await answer_by_media(
         event=callback,
-        step=steps.subscription_step,
+        step=steps.success_step,
         file_repo=file_repo,
     )
     await callback.answer()
@@ -404,6 +389,7 @@ async def change_giveaway_success_handler(
         "Введите новый текст для меню участия:",
         reply_markup=get_back_to_giveaway_info_kb(callback_data.giveaway_id)
     )
+
 
 
 @router.message(ChangeGiveawaySuccessMenuMenuFSM.INPUT)
@@ -458,17 +444,12 @@ async def hide_integration_handler(
         i18n: Localization,
         bot: Bot,
         localized_clock: FromDishka[LocalizedClock],
-        file_repo: FromDishka[MediaStorage],
 ):
     await state.clear()
     giveaway = await interactor.execute(giveaway_id=callback_data.giveaway_id)
     await callback_query.answer()
     bot_username = (await bot.get_me()).username
-    media_file = giveaway.description_step.media[0]
-    bytes = await file_repo.get_media(media_file.filename)
-    media = BufferedInputFile(bytes.read(), filename=media_file.filename)
-    await callback_query.model_dump().answer_photo(
-        photo=media,
+    await callback_query.message.edit_caption(
         caption=format_giveaway_text(giveaway=giveaway, clock=localized_clock, i18n=i18n,
                                      bot_username=bot_username),
         reply_markup=get_giveaway_info_kb(giveaway.id, hide_integration=giveaway.hide_integration)
@@ -485,10 +466,16 @@ async def hide_integration_handler(
     await state.update_data(giveaway_id=str(callback_data.giveaway_id),
                             message_id=callback_query.message.message_id)
     await callback_query.answer()
-    await callback_query.message.edit_text(
-        text="Введите новый URL интеграции:",
-        reply_markup=get_back_to_giveaway_info_kb(callback_data.giveaway_id)
-    )
+    if callback_query.message.caption:
+        await callback_query.message.edit_caption(
+            caption="Введите новый URL интеграции:",
+            reply_markup=get_back_to_giveaway_info_kb(callback_data.giveaway_id)
+        )
+    else:
+        await callback_query.message.edit_text(
+            text="Введите новый URL интеграции:",
+            reply_markup=get_back_to_giveaway_info_kb(callback_data.giveaway_id)
+        )
 
 
 @router.message(EditGiveawayIntegrationUrlFSM.INPUT)
@@ -512,6 +499,8 @@ async def hide_integration_handler(
     bytes = await file_repo.get_media(media_file.filename)
     media = BufferedInputFile(bytes.read(), filename=media_file.filename)
     await bot.edit_message_media(
+        chat_id=message.from_user.id,
+        message_id=message_id,
         media=InputMediaPhoto(
             media=media,
             caption=format_giveaway_text(giveaway=giveaway, clock=localized_clock, i18n=i18n,

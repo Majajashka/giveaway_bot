@@ -34,21 +34,24 @@ class EditGiveawayStepInteractor:
         await self._giveaway_repo.update_step(
             giveaway_id=giveaway_id,
             step_type=step_type,
-            step_data=await self._create_step(giveaway_step, giveaway_id),
+            step_data=await self._create_step(giveaway_step, step_type, giveaway_id),
         )
         await self.uow.commit()
         giveaway = await self._giveaway_repo.get_by_id(giveaway_id=giveaway_id)
         return giveaway
 
-    async def _create_step(self, step: GiveawayStepDTO, giveaway_id: UUID) -> CreateGiveawayStepDTO:
-        giveaway = await self._giveaway_repo.get_by_id(giveaway_id=giveaway_id)
+    async def _create_step(self, step: GiveawayStepDTO, step_type: Literal["description", "subscription", "integration", "success"], giveaway_id: UUID) -> CreateGiveawayStepDTO:
         if step.media:
             media = [
                 await self.media_repo.create_media(data=data, media_type=MediaType.PHOTO)
                 for data in step.media
             ]
         else:
-            media = giveaway.description_step.media[0]
+            if step_type == "description":
+                giveaway = await self._giveaway_repo.get_by_id(giveaway_id=giveaway_id)
+                media = giveaway.description_step.media
+            else:
+                media = None
 
         return CreateGiveawayStepDTO(
             text=step.text,

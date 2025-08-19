@@ -24,21 +24,21 @@ def giveaway_orm_to_giveaway(giveaway: GiveawayORM) -> Giveaway:
         description_step=GiveawayStep(
             text=giveaway.description,
             media=[media_orm_to_media(media) for media in giveaway.media] if giveaway.media else None
-        ) if giveaway.description else None,
+        ) if giveaway.description is not None else None,
         subscription_step=GiveawayStep(
             text=giveaway.subscription_text,
             media=[media_orm_to_media(media) for media in
                    giveaway.subscription_media] if giveaway.subscription_media else None
-        ) if giveaway.subscription_text else None,
+        ) if giveaway.subscription_text is not None else None,
         integration_step=GiveawayStep(
             text=giveaway.integration_text,
             media=[media_orm_to_media(media) for media in
                    giveaway.integration_media] if giveaway.integration_media else None
-        ) if giveaway.integration_text else None,
+        ) if giveaway.integration_text is not None else None,
         success_step=GiveawayStep(
             text=giveaway.success_text,
             media=[media_orm_to_media(media) for media in giveaway.success_media] if giveaway.success_media else None
-        ) if giveaway.success_text else None,
+        ) if giveaway.success_text is not None else None,
         hide_integration=giveaway.hide_integration,
         integration_url=giveaway.integration_url
     )

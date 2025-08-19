@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import datetime, timedelta
 from io import BytesIO
@@ -20,7 +21,7 @@ from giveaway_bot.presentation.bot.keyboard.admin.base import get_admin_menu_kb,
 from giveaway_bot.presentation.bot.keyboard.giveaway import get_giveaway_kb
 from giveaway_bot.presentation.bot.utils.byte_utils import to_bytesio, bytesio_to_base64, base64_to_bytesio
 from giveaway_bot.presentation.bot.utils.clock import LocalizedClock
-from giveaway_bot.presentation.bot.utils.text import format_giveaway_text
+from giveaway_bot.presentation.bot.utils.text import format_giveaway_text, try_delete_message
 
 router = Router(name=__name__)
 logger = logging.getLogger(__name__)
@@ -139,6 +140,9 @@ def get_skip_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=kb)
 
 
+# Media group handlers for media ha-ha
+# without media group - for photo/only text
+
 @router.message(GiveawayCreateFSM.DESCRIPTION_INPUT, F.media_group_id)
 async def process_description_album(album: "AlbumMessage", state: FSMContext):
     await handle_step_album(
@@ -153,6 +157,14 @@ async def process_description_album(album: "AlbumMessage", state: FSMContext):
 
 @router.message(GiveawayCreateFSM.DESCRIPTION_INPUT)
 async def process_description_text(message: Message, state: FSMContext):
+    if not message.photo:
+        logger.info("User sent description without media")
+        msg = await message.answer("Пришлите текст с фото!!!")
+        await asyncio.sleep(3)
+        await try_delete_message(msg)
+        await asyncio.sleep(3)
+        await try_delete_message(message)
+        return
     await handle_step_text(
         message,
         state,

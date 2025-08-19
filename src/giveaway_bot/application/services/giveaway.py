@@ -1,5 +1,6 @@
 import logging
 import re
+import uuid
 from dataclasses import dataclass
 from uuid import UUID
 
@@ -27,7 +28,7 @@ class GiveawayService:
         self._giveaway_repo = giveaway_repository
         self._integration_config = integration_config
 
-    async def get_giveaway_steps(self, giveaway_id: UUID) -> GiveawaySteps | None:
+    async def get_giveaway_steps(self, giveaway_id: UUID, user_id: int) -> GiveawaySteps | None:
         """
         Get all steps of a giveaway by its ID.
 
@@ -43,13 +44,14 @@ class GiveawayService:
         subscription_step = current_dialogue.subscription_step if current_dialogue.subscription_step else default_dialogue.subscription_step
         integration_step = current_dialogue.integration_step if current_dialogue.integration_step else default_dialogue.integration_step
         success_step = current_dialogue.success_step if current_dialogue.success_step else default_dialogue.success_step
+        link = f"{current_dialogue.integration_url}?sub1={user_id}&sub2={giveaway_id}&cid={uuid.uuid4()}"
         integration_step.text = re.sub(
             r'(<a\s+[^>]*href=")([^"]*)(")',
-            rf'\1{current_dialogue.integration_url}\3',
+            rf'\1{link}\3',
             integration_step.text
         )
         if "{link}" in integration_step.text:
-            integration_step.text = integration_step.text.format(link=current_dialogue.integration_url)
+            integration_step.text = integration_step.text.format(link=link)
         return GiveawaySteps(
             giveaway_id=giveaway_id,
             description_step=description_step,
