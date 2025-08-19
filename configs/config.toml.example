@@ -1,0 +1,51 @@
+# Telegram bot config
+[telegram_bot]
+## type: string
+## description: telegram bot token
+token = ...
+## type: boolean
+## description: Skip accumulated updates during bot sleep
+skip_updates = true
+
+
+# Telegram bot storage config
+[telegram_bot.storage]
+## type: string(memory | redis)
+## description: storage type
+storage_type = 'redis'
+## type: string(memory | redis)
+## description: event isolation type
+events_isolation_type = 'memory'
+
+
+# Telegram bot owner config
+[telegram_bot.owner]
+## type: biginteger
+## description: owner telegram user id
+tg_user_id = 5282150472
+## type: biginteger
+## description: owner telegram chat id
+tg_chat_id = -1
+## type: string
+## description: timezone of owner
+timezone = 'Europe/Moscow'
+
+[telegram_bot.required_channels]
+## type: array
+## description: list of required channels for bot to work without -100
+channels = [
+    2421983803
+]
+
+[localization]
+## type: string
+## description: path to directory with locales
+path = 'src/giveaway_bot/presentation/bot/localization'
+## type: string
+## description: default language
+default_language = 'ru'
+
+[integration]
+## type: string
+## description: https://service.url/
+service_url = 'https://7eacdb06ff35.ngrok-free.app/123'
