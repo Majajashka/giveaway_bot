@@ -41,7 +41,6 @@ class ChannelLinkServiceImpl(ChannelLinkService):
     async def get_link(self, channel_id: int) -> str:
         cache_key = f"channel_username:{channel_id}"
         username = await self.redis.get(cache_key)
-        logger.info(type(channel_id))
 
         if username:
             logger.debug(f"Cache hit for channel {channel_id}: {username}")
