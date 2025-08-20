@@ -32,10 +32,36 @@ timezone = 'Europe/Moscow'
 
 [telegram_bot.required_channels]
 ## type: array
-## description: list of required channels for bot to work without -100
+## description: list of required channels for bot to work
 channels = [
-    2421983803
+    ...
 ]
+
+# Postgresql config
+[postgresql]
+POSTGRES_USER = "dev"
+POSTGRES_PASSWORD = "dev"
+POSTGRES_DB = "dev"
+POSTGRES_HOST = "db"
+POSTGRES_PORT = 5425
+## type: integer
+## description: pool size
+pool_size = 25
+
+[redis]
+## type: string
+## description: Redis host (default is localhost)
+host = 'localhost'
+## type: integer
+## description: Redis port (default is 6379)
+port = 6379
+## type: string
+## description: Redis password (if any)
+password = ''
+## type: integer
+## description: Redis database number (default is 0)
+database = 0
+# Localization config
 
 [localization]
 ## type: string
