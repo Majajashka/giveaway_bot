@@ -73,13 +73,14 @@ async def postback(
 
     await interactor.execute(tg_id=data.sub1, postback_data=data.model_dump())
 
-    if await is_click_id_new(redis, data.click_id) is False:
-        return HTTPException(status_code=409, detail="click_id is not new")
 
     giveawya_id = UUID(data.sub2)
     giveawya = await get_giveaway_interactor.execute(giveaway_id=giveawya_id, user_id=data.sub1)
     logger.info("Received postback data: %s", data)
     if data.status == StatusEnum.subscribe:
+        if await is_click_id_new(redis, data.click_id) is False:
+            return HTTPException(status_code=409, detail="click_id is not new")
+
         await edit_subscription_interactor.execute(tg_id=data.sub1, is_subscribed=True)
         if giveawya.success_step.media:
             file = giveawya.success_step.media[0]
