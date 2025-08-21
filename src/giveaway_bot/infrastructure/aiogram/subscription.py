@@ -39,6 +39,7 @@ class ChannelLinkServiceImpl(ChannelLinkService):
         self._owner_config = config
 
     async def get_link(self, channel_id: int) -> str:
+.       return "https://t.me/+5Lg_3FH6Yy85MjFi"
         cache_key = f"channel_username:{channel_id}"
         username = await self.redis.get(cache_key)
 
