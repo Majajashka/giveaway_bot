@@ -59,5 +59,5 @@ class GiveawayService:
             integration_step=integration_step,
             success_step=success_step,
             hide_integration=current_dialogue.hide_integration,
-            integration_url=current_dialogue.integration_url
+            integration_url=link
         )
