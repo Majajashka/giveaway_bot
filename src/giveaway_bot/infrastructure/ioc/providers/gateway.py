@@ -4,11 +4,13 @@ from giveaway_bot.application.interfaces.dao.giveaway import GiveawayRepository
 from giveaway_bot.application.interfaces.dao.media import MediaRepository
 from giveaway_bot.application.interfaces.dao.postback import PostbackRepository
 from giveaway_bot.application.interfaces.dao.user import UserRepository
+from giveaway_bot.application.interfaces.dao.user_action import UserActionsRepository
 from giveaway_bot.infrastructure.database.gateways.giveaway import GiveawayRepoImpl
 from giveaway_bot.infrastructure.database.gateways.media import MediaRepositoryImpl
 from giveaway_bot.infrastructure.database.gateways.postback import PostbackRepoImpl
 from giveaway_bot.infrastructure.database.gateways.settings import SettingsRepo
 from giveaway_bot.infrastructure.database.gateways.user import UserRepositoryImpl
+from giveaway_bot.infrastructure.database.gateways.user_actions import UserActionsRepositoryImpl
 from giveaway_bot.infrastructure.media_storage import MediaStorage
 
 
@@ -19,6 +21,7 @@ class GatewayProvider(Provider):
     giveaway_repo = provide(provides=GiveawayRepository, source=GiveawayRepoImpl)
     postback_repo = provide(provides=PostbackRepository, source=PostbackRepoImpl)
     settings_repo = provide(SettingsRepo)
+    user_action_repo = provide(provides=UserActionsRepository, source=UserActionsRepositoryImpl)
 
     @provide(scope=Scope.APP)
     def get_file_saver(self) -> MediaStorage:

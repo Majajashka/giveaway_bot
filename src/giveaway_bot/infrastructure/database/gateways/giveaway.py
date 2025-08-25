@@ -5,8 +5,9 @@ from uuid import UUID
 from sqlalchemy import insert, select, func, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from giveaway_bot.application.dtos.giveaway import CreateGiveawayDTO, CreateGiveawayStepDTO
+from giveaway_bot.application.dtos.giveaway import CreateGiveawayDTO, CreateGiveawayStepDTO, GiveawayStatsDTO
 from giveaway_bot.application.interfaces.dao.giveaway import GiveawayRepository
+from giveaway_bot.application.interfaces.dao.user_action import UserActionsRepository
 from giveaway_bot.entities.domain.giveaway import Giveaway, GiveawayStep
 from giveaway_bot.infrastructure.database.gateways.mapper import giveaway_orm_to_giveaway
 from giveaway_bot.infrastructure.database.models import GiveawayORM
@@ -15,8 +16,9 @@ from giveaway_bot.infrastructure.database.models.giveaway import giveaway_main_m
 
 
 class GiveawayRepoImpl(GiveawayRepository):
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, repo: UserActionsRepository):
         self.session = session
+        self._repo = repo
 
     async def create(self, giveaway_data: CreateGiveawayDTO) -> Giveaway:
         giveaway = GiveawayORM(
@@ -98,9 +100,10 @@ class GiveawayRepoImpl(GiveawayRepository):
     async def get_by_id(self, giveaway_id: UUID) -> Giveaway | None:
         """Get a giveaway by its ID."""
         stmt = select(GiveawayORM).where(GiveawayORM.id == giveaway_id)
+        stats = await self._repo.get_stats(giveaway_id)
         data = await self.session.execute(stmt)
         giveaway_orm = data.scalar_one_or_none()
-        return self._orm_to_domain(giveaway_orm) if giveaway_orm else None
+        return self._orm_to_domain(giveaway_orm, stats) if giveaway_orm else None
 
     async def get_all(self, active_only: bool = False) -> list[Giveaway]:
         stmt = select(GiveawayORM)
@@ -145,5 +148,5 @@ class GiveawayRepoImpl(GiveawayRepository):
             .values(integration_url=url)
         )
 
-    def _orm_to_domain(self, orm: GiveawayORM) -> Giveaway:
-        return giveaway_orm_to_giveaway(orm)
+    def _orm_to_domain(self, orm: GiveawayORM, stats: GiveawayStatsDTO | None = None) -> Giveaway:
+        return giveaway_orm_to_giveaway(orm, stats)

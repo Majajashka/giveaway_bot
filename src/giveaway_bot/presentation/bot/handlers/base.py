@@ -8,7 +8,9 @@ from dishka import FromDishka
 
 from giveaway_bot.application.interactors.giveaway.get_active_giveaway import GetActiveGiveawayInteractor
 from giveaway_bot.application.interactors.giveaway.get_giveaway_steps import GetGiveawayStepsInteractor
+from giveaway_bot.application.interactors.user.log_action import SaveUserActionInteractor
 from giveaway_bot.common.utils import is_uuid
+from giveaway_bot.entities.enum.user_action import UserActionEnum
 from giveaway_bot.infrastructure.localization.translator import Localization
 from giveaway_bot.infrastructure.media_storage import MediaStorage
 from giveaway_bot.presentation.bot.keyboard.giveaway import get_giveaway_kb
@@ -24,6 +26,7 @@ async def hello_handler(
         command: CommandObject,
         i18n: Localization,
         interactor: FromDishka[GetGiveawayStepsInteractor],
+        user_action_logger_interactor: FromDishka[SaveUserActionInteractor],
         file_repo: FromDishka[MediaStorage]
 ):
     if not is_uuid(command.args):
@@ -50,6 +53,11 @@ async def hello_handler(
         step=step,
         file_repo=file_repo,
         kb=kb
+    )
+    await user_action_logger_interactor.execute(
+        tg_id=message.from_user.id,
+        giveaway_id=giveaway_id,
+        action=UserActionEnum.JOINED_GIVEAWAY
     )
     logger.info(
         f"User {message.from_user.id} started the bot with giveaway ID: {giveaway_id}"

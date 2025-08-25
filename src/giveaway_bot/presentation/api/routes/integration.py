@@ -14,6 +14,8 @@ from redis.asyncio import Redis
 from giveaway_bot.application.interactors.giveaway.get_giveaway_steps import GetGiveawayStepsInteractor
 from giveaway_bot.application.interactors.postback.change_subscription import EditSubscriptionInteractor
 from giveaway_bot.application.interactors.postback.save_postback import SavePostbackInteractor
+from giveaway_bot.application.interactors.user.log_action import SaveUserActionInteractor
+from giveaway_bot.entities.enum.user_action import UserActionEnum
 from giveaway_bot.infrastructure.media_storage import MediaStorage
 
 router = APIRouter(
@@ -35,8 +37,8 @@ class StatusEnum(str, Enum):
 
 
 class PostbackModel(BaseModel):
-    sub1: int
-    sub2: str
+    sub1: int   # tg_id
+    sub2: str   # giveaway_id
     status: StatusEnum
     click_id: str
     payout: Optional[float] = None
@@ -65,6 +67,7 @@ async def postback(
         edit_subscription_interactor: FromDishka[EditSubscriptionInteractor],
         get_giveaway_interactor: FromDishka[GetGiveawayStepsInteractor],
         storage: FromDishka[MediaStorage],
+        user_action_logger_interactor: FromDishka[SaveUserActionInteractor],
         redis: FromDishka[Redis],
         data: PostbackModel = Query()
 ):
@@ -75,9 +78,15 @@ async def postback(
 
 
     giveawya_id = UUID(data.sub2)
+    tg_id = data.sub1
     giveawya = await get_giveaway_interactor.execute(giveaway_id=giveawya_id, user_id=data.sub1)
     logger.info("Received postback data: %s", data)
     if data.status == StatusEnum.subscribe:
+        await user_action_logger_interactor.execute(
+            tg_id=tg_id,
+            giveaway_id=giveawya_id,
+            action=UserActionEnum.ACTIVATE_GIVEAWAY_SUBSCRIPTION
+        )
         if await is_click_id_new(redis, data.click_id) is False:
             return HTTPException(status_code=409, detail="click_id is not new")
 
@@ -91,7 +100,19 @@ async def postback(
         else:
             await bot.send_message(chat_id=data.sub1, text=giveawya.success_step.text)
     elif data.status == StatusEnum.unsubscribe:
+        await user_action_logger_interactor.execute(
+            tg_id=tg_id,
+            giveaway_id=giveawya_id,
+            action=UserActionEnum.DEACTIVATE_GIVEAWAY_SUBSCRIPTION
+        )
         await edit_subscription_interactor.execute(tg_id=data.sub1, is_subscribed=False)
+    elif data.status == StatusEnum.registration:
+        await user_action_logger_interactor.execute(
+            tg_id=tg_id,
+            giveaway_id=giveawya_id,
+            action=UserActionEnum.COMPLETED_REGISTRATION
+        )
+
 
     return {"status": "ok"}
 

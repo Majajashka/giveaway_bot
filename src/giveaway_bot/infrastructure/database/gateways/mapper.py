@@ -1,6 +1,7 @@
 from adaptix._internal.conversion.facade.func import get_converter
 from adaptix._internal.conversion.facade.provider import coercer
 
+from giveaway_bot.application.dtos.giveaway import GiveawayStatsDTO
 from giveaway_bot.entities.domain.giveaway import Giveaway, GiveawayStep
 from giveaway_bot.entities.domain.media import Media
 from giveaway_bot.entities.enum.media import MediaType
@@ -15,7 +16,7 @@ media_orm_to_media = get_converter(
 )
 
 
-def giveaway_orm_to_giveaway(giveaway: GiveawayORM) -> Giveaway:
+def giveaway_orm_to_giveaway(giveaway: GiveawayORM, stats: GiveawayStatsDTO | None = None) -> Giveaway:
     return Giveaway(
         id=giveaway.id,
         title=giveaway.title,
@@ -40,5 +41,6 @@ def giveaway_orm_to_giveaway(giveaway: GiveawayORM) -> Giveaway:
             media=[media_orm_to_media(media) for media in giveaway.success_media] if giveaway.success_media else None
         ) if giveaway.success_text is not None else None,
         hide_integration=giveaway.hide_integration,
-        integration_url=giveaway.integration_url
+        integration_url=giveaway.integration_url,
+        stats=stats
     )

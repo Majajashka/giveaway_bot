@@ -21,3 +21,9 @@ class User:
     def active(self):
         return self.is_active and not self.is_banned
 
+@dataclass
+class UserAction:
+    tg_id: int
+    giveaway_id: str
+    action: str
+    created_at: datetime

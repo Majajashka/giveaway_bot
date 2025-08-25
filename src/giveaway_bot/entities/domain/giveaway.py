@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
+from giveaway_bot.application.dtos.giveaway import GiveawayStatsDTO
 from giveaway_bot.entities.domain.media import Media
 
 
@@ -24,6 +25,8 @@ class Giveaway:
     subscription_step: GiveawayStep | None = None
     integration_step: GiveawayStep | None = None
     success_step: GiveawayStep | None = None
+
+    stats: GiveawayStatsDTO | None = None
 
     def is_active(self, now: datetime) -> bool:
         return now < self.ends_at

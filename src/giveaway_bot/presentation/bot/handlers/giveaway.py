@@ -8,7 +8,9 @@ from giveaway_bot.application.interactors.giveaway.check_subscription import Che
 from giveaway_bot.application.interactors.giveaway.get_active_giveaway import GetActiveGiveawayInteractor
 from giveaway_bot.application.interactors.giveaway.get_giveaway_steps import GetGiveawayStepsInteractor
 from giveaway_bot.application.interactors.giveaway.get_required_channel_links import GetRequiredChannelLinksInteractor
+from giveaway_bot.application.interactors.user.log_action import SaveUserActionInteractor
 from giveaway_bot.config import TelegramBotRequiredChannels, IntegrationConfig
+from giveaway_bot.entities.enum.user_action import UserActionEnum
 from giveaway_bot.infrastructure.database.gateways.settings import SettingsRepo
 from giveaway_bot.infrastructure.localization.translator import Localization
 from giveaway_bot.infrastructure.media_storage import MediaStorage
@@ -54,6 +56,8 @@ async def check_subscription_handler(
         channel_links_interactor: FromDishka[CheckSubscriptionInteractor],
         file_repo: FromDishka[MediaStorage],
         giveaway_interactor: FromDishka[GetGiveawayStepsInteractor],
+        user_action_logger_interactor: FromDishka[SaveUserActionInteractor],
+
 ):
     steps = await giveaway_interactor.execute(callback_data.giveaway_id, user_id=callback_query.from_user.id)
     if not steps:
@@ -68,7 +72,6 @@ async def check_subscription_handler(
                 step=steps.success_step,
                 file_repo=file_repo
             )
-            return
         else:
             await answer_by_media(
                 event=callback_query,
@@ -76,7 +79,12 @@ async def check_subscription_handler(
                 file_repo=file_repo,
                 kb=build_integration_keyboard(url=steps.integration_url)
             )
-            return
+        await user_action_logger_interactor.execute(
+            tg_id=callback_query.from_user.id,
+            giveaway_id=callback_data.giveaway_id,
+            action=UserActionEnum.SUBSCRIBED_TO_CHANNELS
+        )
+        return
     elif result.not_subscribed_channels:
         await answer_by_media(
             event=callback_query,

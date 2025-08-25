@@ -1,4 +1,5 @@
 import logging
+from dataclasses import asdict
 
 from aiogram.types import Message
 
@@ -30,6 +31,33 @@ def format_giveaway_text(giveaway: Giveaway, clock: LocalizedClock, i18n: Locali
         url=f"https://t.me/{bot_username}?start={giveaway.id}"
     )
     blocks = []
+    if giveaway.stats:
+        stats = []
+        stats_dict = asdict(giveaway.stats)
+        field_map = {
+            "participants_count": "Участников",
+            "channel_subscriptions_count": "Подписок на канал",
+            "registrations_count": "Регистраций",
+            "activate_giveaway_subscription_count": "Активаций подписки",
+            "deactivate_giveaway_subscription_count": "Деактиваций подписки"
+        }
+        for field, label in field_map.items():
+            value = stats_dict.get(field)
+            if value is not None:
+                stats.append(f"{label}: {value}")
+
+        try:
+            activation_rate = giveaway.stats.activation_rate
+            only_subscription_rate = giveaway.stats.only_subscription_rate
+            registration_rate = giveaway.stats.registration_rate
+            stats.append(f"Конверсия в активацию: {activation_rate:.1f}%")
+            stats.append(f"Только подписка (без регистрации): {only_subscription_rate:.1f}%")
+            stats.append(f"Конверсия в регистрацию: {registration_rate:.1f}%")
+        except Exception as e:
+            logger.error(f"Failed to calculate rates: {e}")
+
+        if stats:
+            blocks.append("\n\n" + "\n".join(stats))
 
     if giveaway.description_step:
         blocks.append(f"\n\nОписание розыгрыша:\n<blockquote expandable>{giveaway.description_step.text}</blockquote>")
