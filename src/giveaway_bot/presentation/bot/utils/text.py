@@ -50,8 +50,8 @@ def format_giveaway_text(giveaway: Giveaway, clock: LocalizedClock, i18n: Locali
             activation_rate = giveaway.stats.activation_rate
             only_subscription_rate = giveaway.stats.only_subscription_rate
             registration_rate = giveaway.stats.registration_rate
-            stats.append(f"Конверсия в активацию: {activation_rate:.1f}%")
-            stats.append(f"Только подписка (без регистрации): {only_subscription_rate:.1f}%")
+            stats.append(f"Конверсия в подписку на сервис: {activation_rate:.1f}%")
+            stats.append(f"Только подписка на канал (без регистрации): {only_subscription_rate:.1f}%")
             stats.append(f"Конверсия в регистрацию: {registration_rate:.1f}%")
         except Exception as e:
             logger.error(f"Failed to calculate rates: {e}")
