@@ -50,27 +50,27 @@ class UserActionsRepositoryImpl(UserActionsRepository):
             select(
                 func.count(
                     case(
-                        (UserActionsORM.action == UserActionEnum.JOINED_GIVEAWAY.value, UserActionsORM.tg_id.distinct())
+                        (UserActionsORM.action == UserActionEnum.JOINED_GIVEAWAY.value, 1)
                     )
                 ).label("participants_count"),
                 func.count(
                     case(
-                        (UserActionsORM.action == UserActionEnum.SUBSCRIBED_TO_CHANNELS.value, UserActionsORM.tg_id.distinct())
+                        (UserActionsORM.action == UserActionEnum.SUBSCRIBED_TO_CHANNELS.value, 1)
                     )
                 ).label("channel_subscriptions_count"),
                 func.count(
                     case(
-                        (UserActionsORM.action == UserActionEnum.COMPLETED_REGISTRATION.value, UserActionsORM.tg_id.distinct())
+                        (UserActionsORM.action == UserActionEnum.COMPLETED_REGISTRATION.value, 1)
                     )
                 ).label("registrations_count"),
                 func.count(
                     case(
-                        (UserActionsORM.action == UserActionEnum.ACTIVATE_GIVEAWAY_SUBSCRIPTION.value, UserActionsORM.tg_id.distinct())
+                        (UserActionsORM.action == UserActionEnum.ACTIVATE_GIVEAWAY_SUBSCRIPTION.value, 1)
                     )
                 ).label("activate_giveaway_subscription_count"),
                 func.count(
                     case(
-                        (UserActionsORM.action == UserActionEnum.DEACTIVATE_GIVEAWAY_SUBSCRIPTION.value, UserActionsORM.tg_id.distinct())
+                        (UserActionsORM.action == UserActionEnum.DEACTIVATE_GIVEAWAY_SUBSCRIPTION.value, 1)
                     )
                 ).label("deactivate_giveaway_subscription_count"),
             )
