@@ -1,7 +1,7 @@
+import logging
 from uuid import UUID
 from giveaway_bot.application.interfaces.dao.user_action import UserActionsRepository
 from giveaway_bot.application.interfaces.uow import UoW
-from giveaway_bot.common import logging
 from giveaway_bot.entities.enum.user_action import UserActionEnum
 
 logger = logging.getLogger(__name__)
