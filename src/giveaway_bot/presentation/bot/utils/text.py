@@ -11,7 +11,7 @@ from giveaway_bot.presentation.bot.utils.clock import LocalizedClock
 logger = logging.getLogger(__name__)
 
 def format_stats_text(stats: GiveawayStatsDTO) -> str:
-    stats = []
+    stats_text = []
     logger.info(f"Formatting stats: {stats}")
     stats_dict = asdict(stats)
     field_map = {
@@ -24,15 +24,15 @@ def format_stats_text(stats: GiveawayStatsDTO) -> str:
     for field, label in field_map.items():
         value = stats_dict.get(field)
         if value is not None:
-            stats.append(f"{label}: {value}")
+            stats_text.append(f"{label}: {value}")
 
     try:
         activation_rate = stats.activation_rate
         only_subscription_rate = stats.only_subscription_rate
         registration_rate = stats.registration_rate
-        stats.append(f"Конверсия в подписку на сервис: {activation_rate:.1f}%")
-        stats.append(f"Только подписка на канал (без регистрации): {only_subscription_rate:.1f}%")
-        stats.append(f"Конверсия в регистрацию: {registration_rate:.1f}%")
+        stats_text.append(f"Конверсия в подписку на сервис: {activation_rate:.1f}%")
+        stats_text.append(f"Только подписка на канал (без регистрации): {only_subscription_rate:.1f}%")
+        stats_text.append(f"Конверсия в регистрацию: {registration_rate:.1f}%")
     except Exception as e:
         logger.error(f"Failed to calculate rates: {e}")
 
