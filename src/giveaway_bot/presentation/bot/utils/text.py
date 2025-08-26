@@ -36,7 +36,7 @@ def format_stats_text(stats: GiveawayStatsDTO) -> str:
     except Exception as e:
         logger.error(f"Failed to calculate rates: {e}")
 
-    return "\n\n" + "\n".join(stats)
+    return "\n\n" + "\n".join(stats_text)
 
 def format_giveaway_text(giveaway: Giveaway, clock: LocalizedClock, i18n: Localization, bot_username: str) -> str:
     ended = giveaway.ends_at <= clock.now()
