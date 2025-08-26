@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 def format_stats_text(stats: GiveawayStatsDTO) -> str:
     stats = []
+    logger.info(f"Formatting stats: {stats}")
     stats_dict = asdict(stats)
     field_map = {
         "participants_count": "Участников",

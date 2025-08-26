@@ -23,5 +23,5 @@ class UserActionsRepository(Protocol):
     ) -> bool:
         raise NotImplementedError
     
-    async def get_stats(self, giveaway_id: UUID) -> GiveawayStatsDTO:
+    async def get_stats(self, giveaway_id: UUID | None = None) -> GiveawayStatsDTO:
         raise NotImplementedError
