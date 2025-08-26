@@ -74,8 +74,10 @@ class UserActionsRepositoryImpl(UserActionsRepository):
                     )
                 ).label("deactivate_giveaway_subscription_count"),
             )
-            .where(UserActionsORM.giveaway_id == giveaway_id)
         )
+        if giveaway_id:
+            stmt.where(UserActionsORM.giveaway_id == giveaway_id)
+
 
         result = await self._session.execute(stmt)
         row = result.one()

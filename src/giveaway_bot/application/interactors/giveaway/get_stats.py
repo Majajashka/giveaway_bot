@@ -7,5 +7,5 @@ class GetGiveawayStartInteractor:
     def __init__(self, repo: UserActionsRepository):
         self._repo = repo
 
-    async def execute(self, giveaway_id) -> GiveawayStatsDTO:
+    async def execute(self, giveaway_id: int | None = None) -> GiveawayStatsDTO:
         return await self._repo.get_stats(giveaway_id)
